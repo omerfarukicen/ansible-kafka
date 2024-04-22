@@ -1,0 +1,5 @@
+- hosts: kafka
+  roles:
+    - reqs
+    - zookeeper
+    - kafka

@@ -1,0 +1,27 @@
+---
+- name: Construct host_ip_bundles
+  set_fact:
+    host_ip_bundles: "{{ host_ip_bundles | default([]) + [{'host': item, 'ip': hostvars[item].ansible_host}] }}"
+  with_items: "{{ groups['all'] }}"
+  when: hostvars[item].ansible_host is defined
+- name: Add host-IP bundles
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ item.ip }} {{ item.host }}"
+    state: present
+    regexp: "^.*{{ item.host }}.*$"
+  loop: "{{ host_ip_bundles }}"
+  register: hosts_file 
+
+- name: Backup /etc/hosts
+  copy:
+    src: /etc/hosts
+    dest: /etc/hosts.bak
+    backup: yes
+  when: hosts_file.changed
+- name: Install OpenJDK
+  apt:
+    name: openjdk-17-jre-headless
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"

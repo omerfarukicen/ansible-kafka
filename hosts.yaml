@@ -1,0 +1,32 @@
+all:
+  hosts:
+    kafka58:
+      ansible_host: 172.27.2.58
+      kafka_broker_id: 58      
+      zookeeper_id: 58
+      kafka_listener_hostname: kafka58
+    kafka59:
+      kafka_broker_id: 59    
+      ansible_host: 172.27.2.59
+      zookeeper_id: 59      
+      kafka_listener_hostname: kafka59
+    kafka60:
+      kafka_broker_id: 60    
+      ansible_host: 172.27.2.60
+      zookeeper_id: 60          
+      kafka_listener_hostname: kafka60
+  vars:
+    kafka_zookeeper_connect: 'kafka58:2181,kafka59:2181,kafka60:2181/kafka'
+    kafka_bootstrap_servers: 'kafka58:9092,kafka59:9092,kafka60:9092'
+    zookeeper_servers_use_inventory_hostname: true
+  children:
+    zookeeper-nodes:
+      hosts:
+        kafka58:
+        kafka59:
+        kafka60:      
+    kafka:
+      hosts:
+        kafka58:
+        kafka59:
+        kafka60:        
